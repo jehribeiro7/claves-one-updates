@@ -2,6 +2,11 @@
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versao do aplicativo'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -11,7 +16,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Confirmar execucao
+      - name: Validar versao
+        env:
+          VERSION: ${{ inputs.version }}
         run: |
-          echo "CLAVES ONE - Automacao iniciada"
-          echo "Ambiente GitHub Actions funcionando"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Versao invalida"
+            exit 1
+          fi
+          echo "Versao recebida: $VERSION"
+          echo "Validacao concluida"
