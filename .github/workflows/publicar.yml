@@ -1,0 +1,17 @@
+﻿name: CLAVES ONE - Publicacao
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Confirmar execucao
+        run: |
+          echo "CLAVES ONE - Automacao iniciada"
+          echo "Ambiente GitHub Actions funcionando"
