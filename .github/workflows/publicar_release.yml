@@ -1,0 +1,48 @@
+name: Publicar atualizacao CLAVES ONE
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar arquivos
+        uses: actions/checkout@v4
+
+      - name: Validar versao e arquivos
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
+            echo "Versao invalida"
+            exit 1
+          }
+
+          test -f "releases/$VERSION/app-release.apk"
+          test -f "releases/$VERSION/CLAVES_ONE_Setup_$VERSION.exe"
+
+      - name: Criar GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          gh release create "$GITHUB_REF_NAME" \
+            "releases/$VERSION/app-release.apk" \
+            "releases/$VERSION/CLAVES_ONE_Setup_$VERSION.exe" \
+            --title "CLAVES ONE $VERSION" \
+            --notes "Atualizacao oficial CLAVES ONE." \
+            --verify-tag
